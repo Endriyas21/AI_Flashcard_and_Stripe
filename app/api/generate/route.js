@@ -46,7 +46,7 @@ Return the following JSON format
 export async function POST(req) {
   const openai = OpenAI();
 
-  const data = req.text();
+  const data = await req.text();
 
   const completion = await openai.chat.completion.create({
     message: [
