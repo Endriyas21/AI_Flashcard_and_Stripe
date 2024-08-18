@@ -18,4 +18,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// enableIndexedDbPersistence(db)
+//   .catch((err) => {
+//     if (err.code === 'failed-precondition') {
+//       console.error("Persistence failed: ", err);
+//     } else if (err.code === 'unimplemented') {
+//       console.error("Persistence is not available: ", err);
+//     }
+//   });
 export { db };
