@@ -1,8 +1,17 @@
-import { AppBar, Container, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Container,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+} from "@mui/material";
+import Link from "next/link";
+import { SignUp } from "@clerk/nextjs"; // Ensure this import is correct
 
 export default function SignUpPage() {
   return (
-    <Container maxWidth="100vm">
+    <Container maxWidth="100vw">
       <AppBar position="static" sx={{ backgroundColor: "#3f51b5" }}>
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -25,9 +34,12 @@ export default function SignUpPage() {
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
+        sx={{ mt: 4 }}
       >
-        <Typography variant="h4">Sign In</Typography>
-        <SignIn />
+        <Typography variant="h4" gutterBottom>
+          Sign Up
+        </Typography>
+        <SignUp /> {/* Ensure this component is available from Clerk */}
       </Box>
     </Container>
   );

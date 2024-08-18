@@ -165,7 +165,7 @@ export default function GenerateKey() {
                             variant="h5"
                             component="div"
                             sx={{
-                              fontSize: "calc(1rem + 1vw)", // Dynamically scale the font size based on viewport width
+                              fontSize: "calc(1rem + 0.5vw)", // Dynamically scale the font size based on viewport width
                               overflowWrap: "break-word", // Handle long words by breaking them to the next line
                               textAlign: "center", // Center the text
                               width: "fit-content", // Fit the text within the available space
@@ -178,10 +178,10 @@ export default function GenerateKey() {
                         </div>
                         <div>
                           <Typography
-                            variant="h5"
+                            variant="h4"
                             component="div"
                             sx={{
-                              fontSize: "calc(1rem + 1vw)", // Dynamically scale the font size based on viewport width
+                              fontSize: "calc(1rem + 0.5vw)", // Dynamically scale the font size based on viewport width
                               overflowWrap: "break-word", // Handle long words by breaking them to the next line
                               textAlign: "center", // Center the text
                               width: "fit-content", // Fit the text within the available space

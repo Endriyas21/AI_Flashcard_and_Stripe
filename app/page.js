@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import getStripe from "./utils/get-stripe";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
@@ -8,28 +9,32 @@ import {
   Toolbar,
   Typography,
   Box,
+  Button,
 } from "@mui/material";
 import Head from "next/head";
+
 export default function Home() {
   return (
     <Container maxWidth="100vw">
       <Head>
-        <title>Flashcard SaaS </title>
+        <title>Flashcard SaaS</title>
         <meta
           name="description"
-          content="create flashcard from your text"
+          content="create flashcards from your text"
         ></meta>
       </Head>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6">Flashcard SaaS </Typography>
+          <Typography variant="h6" style={{ flexGrow: 1 }}>
+            Flashcard SaaS
+          </Typography>
           <SignedOut>
-            <button color="inherit" href="/sign-in">
-              Login{" "}
-            </button>
-            <button color="inherit" href="/sign-up">
-              Sign Up{" "}
-            </button>
+            <Link href="/sign-in" passHref>
+              <Button color="inherit">Login</Button>
+            </Link>
+            <Link href="/sign-up" passHref>
+              <Button color="inherit">Sign Up</Button>
+            </Link>
           </SignedOut>
           <SignedIn>
             <UserButton />
@@ -37,22 +42,27 @@ export default function Home() {
         </Toolbar>
       </AppBar>
       <Box sx={{ textAlign: "center", my: 4 }}>
-        <Typography variant="h2">Welcome to Flashcard SaaS </Typography>
+        <Typography variant="h2">Welcome to Flashcard SaaS</Typography>
         <Typography variant="h5" gutterBottom>
           The easiest way to make flashcards from your text
         </Typography>
-        <button variant="contained" color="primary" sx={{ mt: 2 }}>
+        <Button variant="contained" color="primary" sx={{ mt: 2 }}>
           Get Started
-        </button>
+        </Button>
       </Box>
       <Box sx={{ my: 6 }}>
-        <Typography variant="h2" components="h2" gutterBottom>
+        <Typography
+          variant="h3"
+          component="h3"
+          gutterBottom
+          sx={{ display: "flex", justifyContent: "center" }}
+        >
           Features
         </Typography>
-        <Grid spacing={4}>
+        <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
             <Typography variant="h6" gutterBottom>
-              Easy Text Input{" "}
+              Easy Text Input
             </Typography>
             <Typography>
               Simply Input your text and let our app do the rest. Creating
@@ -61,7 +71,7 @@ export default function Home() {
           </Grid>
           <Grid item xs={12} md={4}>
             <Typography variant="h6" gutterBottom>
-              Smart Flashcards{" "}
+              Smart Flashcards
             </Typography>
             <Typography>
               Our Software breaks down your text into concise flashcards,
@@ -70,7 +80,7 @@ export default function Home() {
           </Grid>
           <Grid item xs={12} md={4}>
             <Typography variant="h6" gutterBottom>
-              Accessible Anywhere{" "}
+              Accessible Anywhere
             </Typography>
             <Typography>
               Access your flashcards from any device, at any time. Study on the
@@ -81,7 +91,6 @@ export default function Home() {
       </Box>
       <Box sx={{ my: 6, textAlign: "center" }}>
         <Typography variant="h4" gutterBottom>
-          {" "}
           Pricing
         </Typography>
         <Grid container spacing={4}>
@@ -95,43 +104,44 @@ export default function Home() {
               }}
             >
               <Typography variant="h6" gutterBottom>
-                Basic{" "}
+                Basic
               </Typography>
               <Typography variant="h6" gutterBottom>
-                $5 / month{" "}
+                $5 / month
               </Typography>
 
               <Typography>
                 Access to basic flashcard features and limited storage.
               </Typography>
-              <button variant="contained" color="primary" sx={{ mt: 2 }}>
-                Choose basic
-              </button>
+              <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+                Choose Basic
+              </Button>
             </Box>
           </Grid>
-          <Grid item xs={12} md={6}></Grid>
-          <Box
-            sx={{
-              p: 3,
-              border: "1px solid",
-              borderColor: "grey.300",
-              borderRadius: 2,
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Pro{" "}
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              $10 / month{" "}
-            </Typography>
+          <Grid item xs={12} md={6}>
+            <Box
+              sx={{
+                p: 3,
+                border: "1px solid",
+                borderColor: "grey.300",
+                borderRadius: 2,
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Pro
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                $10 / month
+              </Typography>
 
-            <Typography>
-              Unlimited flashcards and storage, with priority support.
-            </Typography>
-            <button variant="contained" color="primary" sx={{ mt: 2 }}>
-              Choose Pro
-            </button>
-          </Box>
+              <Typography>
+                Unlimited flashcards and storage, with priority support.
+              </Typography>
+              <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+                Choose Pro
+              </Button>
+            </Box>
+          </Grid>
         </Grid>
       </Box>
     </Container>

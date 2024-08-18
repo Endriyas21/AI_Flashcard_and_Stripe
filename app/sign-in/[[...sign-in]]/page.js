@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   AppBar,
   Container,
@@ -6,8 +7,9 @@ import {
   Button,
   Box,
 } from "@mui/material";
+import { SignIn } from "@clerk/nextjs";
 
-export default function SignUpPage() {
+export default function SignInPage() {
   return (
     <Container maxWidth="100vw">
       <AppBar position="static" sx={{ backgroundColor: "#3f51b5" }}>
@@ -16,7 +18,7 @@ export default function SignUpPage() {
             Flashcard SaaS
           </Typography>
           <Button color="inherit">
-            <Link href="/sign-up" passHref>
+            <Link href="/sign-in" passHref>
               Login
             </Link>
           </Button>
@@ -32,9 +34,12 @@ export default function SignUpPage() {
         flexDirection="column"
         alignItems="center"
         justifyContent="center"
+        sx={{ mt: 4 }}
       >
-        <Typography variant="h4">Sign Up</Typography>
-        <SignUp />
+        <Typography variant="h4" gutterBottom>
+          Sign In
+        </Typography>
+        <SignIn />
       </Box>
     </Container>
   );
