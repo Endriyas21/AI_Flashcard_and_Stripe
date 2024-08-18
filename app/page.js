@@ -46,9 +46,11 @@ export default function Home() {
         <Typography variant="h5" gutterBottom>
           The easiest way to make flashcards from your text
         </Typography>
-        <Button variant="contained" color="primary" sx={{ mt: 2 }}>
-          Get Started
-        </Button>
+        <Link href="/generate" passHref>
+          <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+            Get Started
+          </Button>
+        </Link>
       </Box>
       <Box sx={{ my: 6 }}>
         <Typography

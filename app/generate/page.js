@@ -1,8 +1,16 @@
 "use client";
 
-import { collection, getDoc, writeBatch, doc } from "firebase/firestore";
+import {
+  collection,
+  getDoc,
+  setDoc,
+  writeBatch,
+  doc,
+} from "firebase/firestore";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { db } from "../../firebase";
+
 import {
   Container,
   Box,
@@ -181,12 +189,13 @@ export default function GenerateKey() {
                             variant="h4"
                             component="div"
                             sx={{
-                              fontSize: "calc(1rem + 0.5vw)", // Dynamically scale the font size based on viewport width
+                              fontSize: "calc(1rem + 0.25vw)", // Dynamically scale the font size based on viewport width
                               overflowWrap: "break-word", // Handle long words by breaking them to the next line
                               textAlign: "center", // Center the text
                               width: "fit-content", // Fit the text within the available space
                               maxWidth: "100%", // Ensure it doesn’t exceed the container width
                               whiteSpace: "normal", // Allow wrapping
+                              p: 2,
                             }}
                           >
                             {flashcard.back}
