@@ -2,7 +2,7 @@
 
 import { collection, getDoc, writeBatch, doc } from "firebase/firestore";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; //changed from next/router since we are using next 12 and the app directory as root
+import { useRouter } from "next/navigation";
 import {
   Container,
   Box,
@@ -20,7 +20,7 @@ import {
   DialogActions,
 } from "@mui/material";
 
-export default function generateKey() {
+export default function GenerateKey() {
   const { isloaded, isSignedIn, user } = useState();
   const [flashcards, setFlashcards] = useState([]);
   const [flipped, setFlipped] = useState([]);
@@ -51,6 +51,7 @@ export default function generateKey() {
   const handleClose = () => {
     setOpen(false);
   };
+
   const saveFlashcards = async () => {
     if (!name) {
       alert("Please enter a name");
@@ -94,11 +95,11 @@ export default function generateKey() {
         }}
       >
         <Typography variant="h4">Generate Flashcards</Typography>
-        <Paper sx={{ p: 4, width: "100%" }}>
+        <Paper sx={{ p: 4, width: "100%" }} elevation={12}>
           <TextField
             value={text}
             onChange={(e) => setText(e.target.value)}
-            lable="Enter Text"
+            label="Enter Text"
             fullWidth
             multiline
             rows={4}
@@ -116,16 +117,17 @@ export default function generateKey() {
         </Paper>
       </Box>
       {flashcards.length > 0 && (
-        <Box sx={{ display: "flex", flexWrap: "wrap" }}>
-          <Typography variant="h5">Flashcards Preview</Typography>
-          <Grid container spacing={2}>
+        <Box sx={{ mt: 4 }}>
+          <Typography
+            variant="h4"
+            sx={{ display: "flex", justifyContent: "center", mb: 2 }}
+          >
+            Flashcards Preview
+          </Typography>
+          <Grid container spacing={2} sx={{ mt: 2 }}>
             {flashcards.map((flashcard, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
-                <CardActionArea
-                  onClick={() => {
-                    handleCardClick(index);
-                  }}
-                >
+                <CardActionArea onClick={() => handleCardClick(index)}>
                   <CardContent>
                     <Box
                       sx={{
@@ -135,8 +137,8 @@ export default function generateKey() {
                           transformStyle: "preserve-3d",
                           position: "relative",
                           width: "100%",
-                          height: "200%",
-                          boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+                          height: "200px",
+                          boxShadow: "0 4px 8px 0 rgba(0,0,0,0.8)",
                           transform: flipped[index]
                             ? "rotateY(180deg)"
                             : "rotateY(0deg)",
@@ -153,18 +155,40 @@ export default function generateKey() {
                           boxSizing: "border-box",
                         },
                         "& > div > div:nth-of-type(2)": {
-                          transform: "roterY(180deg)",
+                          transform: "rotateY(180deg)",
                         },
                       }}
                     >
                       <div>
                         <div>
-                          <Typography variant="h5" component="div">
+                          <Typography
+                            variant="h5"
+                            component="div"
+                            sx={{
+                              fontSize: "calc(1rem + 1vw)", // Dynamically scale the font size based on viewport width
+                              overflowWrap: "break-word", // Handle long words by breaking them to the next line
+                              textAlign: "center", // Center the text
+                              width: "fit-content", // Fit the text within the available space
+                              maxWidth: "100%", // Ensure it doesn’t exceed the container width
+                              whiteSpace: "normal", // Allow wrapping
+                            }}
+                          >
                             {flashcard.front}
                           </Typography>
                         </div>
                         <div>
-                          <Typography variant="h5" component="div">
+                          <Typography
+                            variant="h5"
+                            component="div"
+                            sx={{
+                              fontSize: "calc(1rem + 1vw)", // Dynamically scale the font size based on viewport width
+                              overflowWrap: "break-word", // Handle long words by breaking them to the next line
+                              textAlign: "center", // Center the text
+                              width: "fit-content", // Fit the text within the available space
+                              maxWidth: "100%", // Ensure it doesn’t exceed the container width
+                              whiteSpace: "normal", // Allow wrapping
+                            }}
+                          >
                             {flashcard.back}
                           </Typography>
                         </div>
@@ -186,7 +210,7 @@ export default function generateKey() {
         <DialogTitle>Save Flashcards</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please Enter a name for your flashcards collection
+            Please enter a name for your flashcards collection.
           </DialogContentText>
           <TextField
             value={name}
@@ -207,10 +231,6 @@ export default function generateKey() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={saveFlashcards} color="primary">
-            {" "}
-            Save{" "}
-          </Button>
         </DialogActions>
       </Dialog>
     </Container>
