@@ -222,12 +222,14 @@ export default function GenerateKey() {
             Please enter a name for your flashcards collection.
           </DialogContentText>
           <TextField
+            autoFocus
+            margin="dense"
+            lable="collection Name"
+            type="text"
+            fullWidth
             value={name}
             onChange={(e) => setName(e.target.value)}
-            label="Enter a name for the flashcard set"
-            fullWidth
             variant="outlined"
-            sx={{ mb: 2 }}
           />
           <Button
             variant="contained"
