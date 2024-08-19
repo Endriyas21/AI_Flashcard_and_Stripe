@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import getStripe from "./utils/get-stripe";
@@ -10,12 +11,34 @@ import {
   Typography,
   Box,
   Button,
+  Paper,
 } from "@mui/material";
 import Head from "next/head";
 
 export default function Home() {
+  const handleSubmit = async () => {
+    const checkoutSession = await fetch("./api/checkout_session", {
+      method: "POST",
+      headers: {
+        origin: "https://localhost:3000",
+      },
+    });
+
+    const checkoutSessionJson = await checkoutSession.json();
+
+    if (checkoutSession.statusCode === 500) {
+      console.error(checkoutSession.message);
+      return;
+    }
+
+    const stripe = await getStripe();
+    const { error } = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
+    });
+  };
+
   return (
-    <Container maxWidth="100vw">
+    <Container maxWidth="lg">
       <Head>
         <title>Flashcard SaaS</title>
         <meta
@@ -23,10 +46,10 @@ export default function Home() {
           content="create flashcards from your text"
         ></meta>
       </Head>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
-            Flashcard SaaS
+      <AppBar position="static" sx={{ bgcolor: "#0077B6" }}>
+        <Toolbar sx={{ minHeight: 200 }}>
+          <Typography variant="h3" style={{ flexGrow: 1 }}>
+            አጤረራ
           </Typography>
           <SignedOut>
             <Link href="/sign-in" passHref>
@@ -41,58 +64,79 @@ export default function Home() {
           </SignedIn>
         </Toolbar>
       </AppBar>
-      <Box sx={{ textAlign: "center", my: 4 }}>
-        <Typography variant="h2">Welcome to Flashcard SaaS</Typography>
+      <Paper elevation={9} sx={{ textAlign: "center", my: 4, p: 2 }}>
+        <Typography variant="h2" sx={{ color: "#03045E" }}>
+          Welcome to አጤረራ
+        </Typography>
         <Typography variant="h5" gutterBottom>
           The easiest way to make flashcards from your text
         </Typography>
         <Link href="/generate" passHref>
-          <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2, bgcolor: "#00B4D8", mr: 2 }}
+          >
             Get Started
           </Button>
         </Link>
-      </Box>
+        <Link href="/flashcards" passHref>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2, bgcolor: "#00B4D8" }}
+          >
+            Flashcards
+          </Button>
+        </Link>
+      </Paper>
       <Box sx={{ my: 6 }}>
         <Typography
           variant="h3"
           component="h3"
           gutterBottom
-          sx={{ display: "flex", justifyContent: "center" }}
+          sx={{ display: "flex", justifyContent: "center", color: "#03045E" }}
         >
           Features
         </Typography>
         <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>
-              Easy Text Input
-            </Typography>
-            <Typography>
-              Simply Input your text and let our app do the rest. Creating
-              flashcards has never been easier
-            </Typography>
+            <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
+              <Typography variant="h5" gutterBottom>
+                Easy Text Input
+              </Typography>
+              <Typography>
+                Simply input your text and let our app do the rest. Creating
+                flashcards has never been easier.
+              </Typography>
+            </Paper>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>
-              Smart Flashcards
-            </Typography>
-            <Typography>
-              Our Software breaks down your text into concise flashcards,
-              perfect for studying
-            </Typography>
+            <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
+              <Typography variant="h5" gutterBottom>
+                Smart Flashcards
+              </Typography>
+              <Typography>
+                Our software breaks down your text into concise flashcards,
+                perfect for studying.
+              </Typography>
+            </Paper>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>
-              Accessible Anywhere
-            </Typography>
-            <Typography>
-              Access your flashcards from any device, at any time. Study on the
-              go with ease.
-            </Typography>
+            <Paper elevation={5} sx={{ p: 2, textAlign: "center" }}>
+              <Typography variant="h5" gutterBottom>
+                Accessible Anywhere
+              </Typography>
+              <Typography>
+                Access your flashcards from any device, at any time. Study on
+                the go with ease.
+              </Typography>
+            </Paper>
           </Grid>
         </Grid>
       </Box>
       <Box sx={{ my: 6, textAlign: "center" }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h3" gutterBottom sx={{ color: "#03045E" }}>
           Pricing
         </Typography>
         <Grid container spacing={4}>
@@ -135,11 +179,16 @@ export default function Home() {
               <Typography variant="h6" gutterBottom>
                 $10 / month
               </Typography>
-
               <Typography>
                 Unlimited flashcards and storage, with priority support.
               </Typography>
-              <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ mt: 2 }}
+                onClick={handleSubmit}
+                aria-label="Choose Pro Plan"
+              >
                 Choose Pro
               </Button>
             </Box>

@@ -7,9 +7,12 @@ import {
   writeBatch,
   doc,
 } from "firebase/firestore";
+import Link from "next/link";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { db } from "../../firebase";
+import { useUser } from "@clerk/nextjs";
 
 import {
   Container,
@@ -26,24 +29,46 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 
 export default function GenerateKey() {
-  const { isloaded, isSignedIn, user } = useState();
+  // const { isloaded, isSignedIn, user } = useState();
+  const { isLoaded, isSignedIn, user } = useUser();
   const [flashcards, setFlashcards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [text, setText] = useState("");
   const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    fetch("api/generate", {
-      method: "POST",
-      body: text,
-    })
-      .then((res) => res.json())
-      .then((data) => setFlashcards(data));
+  const handleSubmit = async () => {
+    if (!text.trim()) {
+      alert("Please enter some text to generate flashcards.");
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        body: text,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate flashcards");
+      }
+
+      const data = await response.json();
+      setFlashcards(data);
+    } catch (error) {
+      console.error("Error generating flashcards:", error);
+      alert("An error occurred while generating flashcards. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCardClick = (id) => {
@@ -53,46 +78,72 @@ export default function GenerateKey() {
     }));
   };
 
-  const handleOpen = () => {
+  const handleOpenDialog = () => {
     setOpen(true);
   };
-  const handleClose = () => {
+  const handleCloseDialog = () => {
     setOpen(false);
   };
 
   const saveFlashcards = async () => {
-    if (!name) {
-      alert("Please enter a name");
+    if (!name.trim()) {
+      alert("Please enter a name for your flashcard set.");
       return;
     }
-    const batch = writeBatch(db);
-    const userDocRef = doc(collection(db, "users"), user.id);
-    const docSnap = await getDoc(userDocRef);
 
-    if (docSnap.exists()) {
-      const collections = docSnap.data().flashcards || [];
-      if (collections.find((f) => f.name === name)) {
-        alert("Flashcard set already exists");
+    try {
+      if (!user) {
+        alert("User not authenticated.");
         return;
-      } else {
-        collections.push({ name });
-        batch.set(userDocRef, { flashcards: collections }, { merge: true });
       }
-    } else {
-      batch.set(userDocRef, { flashcards: [{ name }] });
+
+      const userDocRef = doc(db, "users", user.id); // Ensure the document reference is correct
+      const userDocSnap = await getDoc(userDocRef);
+
+      const batch = writeBatch(db);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        const updatedSets = [...(userData.flashcardSets || []), { name }];
+        batch.update(userDocRef, { flashcardSets: updatedSets });
+      } else {
+        batch.set(userDocRef, { flashcardSets: [{ name }] });
+      }
+
+      const setDocRef = doc(collection(userDocRef, "flashcardSets"), name);
+      batch.set(setDocRef, { flashcards });
+
+      await batch.commit();
+
+      alert("Flashcards saved successfully!");
+      handleCloseDialog();
+      setName(""); // Reset the name state
+    } catch (error) {
+      console.error("Error saving flashcards:", error);
+      alert("An error occurred while saving flashcards. Please try again.");
     }
-    const colRef = collection(userDocRef, name);
-    flashcards.forEach((flashcard) => {
-      const cardDocRef = doc(colRef);
-      batch.set(cardDocRef, flashcard);
-    });
-    await batch.commit();
-    handleClose();
-    router.push("/flashcards");
   };
 
   return (
-    <Container>
+    <Container maxWidth="100vw">
+      <AppBar position="static" sx={{ bgcolor: "#0077B6" }}>
+        <Toolbar sx={{ minHeight: 200 }}>
+          <Typography variant="h3" style={{ flexGrow: 1 }}>
+            አጤረራ
+          </Typography>
+          <SignedOut>
+            <Link href="/sign-in" passHref>
+              <Button color="inherit">Login</Button>
+            </Link>
+            <Link href="/sign-up" passHref>
+              <Button color="inherit">Sign Up</Button>
+            </Link>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </Toolbar>
+      </AppBar>
       <Box
         sx={{
           mt: 4,
@@ -102,7 +153,9 @@ export default function GenerateKey() {
           alignItems: "center",
         }}
       >
-        <Typography variant="h4">Generate Flashcards</Typography>
+        <Typography variant="h4" sx={{ color: "#03045E" }}>
+          Generate Flashcards
+        </Typography>
         <Paper sx={{ p: 4, width: "100%" }} elevation={12}>
           <TextField
             value={text}
@@ -117,10 +170,12 @@ export default function GenerateKey() {
           <Button
             onClick={handleSubmit}
             variant="contained"
-            color="primary"
+            sx={{ bgcolor: "#00B4D8" }}
             fullWidth
+            disabled={loading}
           >
-            Submit
+            {loading ? "Generating..." : "Submit"}
+            
           </Button>
         </Paper>
       </Box>
@@ -142,6 +197,7 @@ export default function GenerateKey() {
                         perspective: "1000px",
                         "& > div": {
                           transition: "transform 0.6s",
+                          bgcolor: "#90E0EF",
                           transformStyle: "preserve-3d",
                           position: "relative",
                           width: "100%",
@@ -153,6 +209,7 @@ export default function GenerateKey() {
                         },
                         "& > div > div": {
                           position: "absolute",
+                          bgcolor: "#90E0EF",
                           width: "100%",
                           height: "100%",
                           backfaceVisibility: "hidden",
@@ -164,6 +221,7 @@ export default function GenerateKey() {
                         },
                         "& > div > div:nth-of-type(2)": {
                           transform: "rotateY(180deg)",
+                          bgcolor: "#00B4D8",
                         },
                       }}
                     >
@@ -189,7 +247,7 @@ export default function GenerateKey() {
                             variant="h4"
                             component="div"
                             sx={{
-                              fontSize: "calc(1rem + 0.25vw)", // Dynamically scale the font size based on viewport width
+                              fontSize: "calc(0.75rem + 0.25vw)", // Dynamically scale the font size based on viewport width
                               overflowWrap: "break-word", // Handle long words by breaking them to the next line
                               textAlign: "center", // Center the text
                               width: "fit-content", // Fit the text within the available space
@@ -209,13 +267,17 @@ export default function GenerateKey() {
             ))}
           </Grid>
           <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-            <Button variant="contained" color="secondary" onClick={handleOpen}>
-              Save
+            <Button
+              variant="contained"
+              sx={{ bgcolor: "#00B4D8" }}
+              onClick={handleOpenDialog}
+            >
+              Save Flashcards
             </Button>
           </Box>
         </Box>
       )}
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleCloseDialog}>
         <DialogTitle>Save Flashcards</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -224,13 +286,14 @@ export default function GenerateKey() {
           <TextField
             autoFocus
             margin="dense"
-            lable="collection Name"
+            label="Collection Name" // Corrected label
             type="text"
             fullWidth
             value={name}
             onChange={(e) => setName(e.target.value)}
             variant="outlined"
           />
+
           <Button
             variant="contained"
             color="primary"
@@ -241,7 +304,7 @@ export default function GenerateKey() {
           </Button>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </Container>
